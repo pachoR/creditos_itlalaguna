@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import AlumnosService from "../../services/alumnosService";
+import ConfiguracionService from "../../services/configuracionService";
 import type { AlumnoCreditosReport } from "../../types/alumno";
 import { Box, Typography, Container, TextField, InputAdornment, Switch, FormControlLabel } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -12,6 +13,7 @@ export const Home = () => {
     const [selectedReport, setSelectedReport] = useState<AlumnoCreditosReport | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [isTableView, setIsTableView] = useState(false);
+    const [creditosRequeridos, setCreditosRequeridos] = useState<number>(6);
 
     const {
         page,
@@ -27,15 +29,30 @@ export const Home = () => {
     const fetchReport = async () => {
         try {
             const reports = await AlumnosService.getAlumnosCreditosReport();
-            console.log('Fetched reports:', reports);
             setReports(reports);
         } catch (error) {
             console.error('Error fetching report:', error);
         }
     }
 
+    const fetchCreditosRequeridos = async () => {
+        try {
+            const config = await ConfiguracionService.getByNombre('creditos_a_completar');
+            const creditos = parseInt(config.config_valor, 10);
+            if (!isNaN(creditos) && creditos > 0) {
+                setCreditosRequeridos(creditos);
+            }
+        } catch (error) {
+            console.error('Error fetching creditos_a_completar:', error);
+            // Si hay error, mantener el valor por defecto de 6
+        }
+    }
+
     const getData = async () => {
-        fetchReport();
+        await Promise.all([
+            fetchReport(),
+            fetchCreditosRequeridos()
+        ]);
     };
 
     useEffect(() => {
@@ -104,6 +121,7 @@ export const Home = () => {
                     onCardClick={handleCardClick}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
+                    creditosRequeridos={creditosRequeridos}
                 />
             ) : (
                 <TableView

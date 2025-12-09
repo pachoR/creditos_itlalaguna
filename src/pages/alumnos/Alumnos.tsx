@@ -15,6 +15,7 @@ import {
 } from '@mui/icons-material';
 import type { GridColDef } from '@mui/x-data-grid';
 import AlumnosService from '../../services/alumnosService';
+import ConfiguracionService from '../../services/configuracionService';
 import type { Alumno, CreateAlumnoDto } from '../../types/alumno';
 import AlumnoFormDialog from '../../components/dialogs/AlumnoFormDialog';
 import DeleteAlumnoDialog from '../../components/dialogs/DeleteAlumnoDialog';
@@ -29,6 +30,7 @@ export const Alumnos = () => {
     const [editingAlumno, setEditingAlumno] = useState<Alumno | null>(null);
     const [deletingAlumno, setDeletingAlumno] = useState<Alumno | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [numeroControlLength, setNumeroControlLength] = useState<number>(9);
     const [snackbar, setSnackbar] = useState<{
         open: boolean;
         message: string;
@@ -63,6 +65,7 @@ export const Alumnos = () => {
 
     useEffect(() => {
         loadAlumnos();
+        loadNumeroControlLength();
     }, []);
 
     useEffect(() => {
@@ -93,6 +96,19 @@ export const Alumnos = () => {
         }
     };
 
+    const loadNumeroControlLength = async () => {
+        try {
+            const config = await ConfiguracionService.getByNombre('numero_control_length');
+            const length = parseInt(config.config_valor, 10);
+            if (!isNaN(length) && length > 0) {
+                setNumeroControlLength(length);
+            }
+        } catch (error) {
+            console.error('Error fetching numero_control_length:', error);
+            // Si hay error, mantener el valor por defecto de 9
+        }
+    };
+
     const showSnackbar = (message: string, severity: 'success' | 'error' | 'info') => {
         setSnackbar({ open: true, message, severity });
     };
@@ -113,8 +129,8 @@ export const Alumnos = () => {
 
     const handleSubmitAlumno = async (alumnoData: CreateAlumnoDto) => {
         const nctrlLength = alumnoData.nctrl.trim().length;
-        if (nctrlLength < 8 || nctrlLength > 10) {
-            showSnackbar('Número de control inválido. Debe tener de 8 a 10 caracteres', 'error');
+        if (nctrlLength !== numeroControlLength) {
+            showSnackbar(`Número de control inválido. Debe tener exactamente ${numeroControlLength} caracteres`, 'error');
             throw new Error('Número de control inválido');
         }
 

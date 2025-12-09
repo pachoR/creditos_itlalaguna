@@ -12,7 +12,6 @@ export class AlumnosService {
 
     static async getAlumnosCreditosReport(): Promise<AlumnoCreditosReport[]> {
         const response = await api.get<AlumnoCreditosReport[]>(`${this.BASE_URL}/creditos-report`);
-        console.log('AlumnosCreditosReport response data:', response.data);
         return response.data;
     }
 

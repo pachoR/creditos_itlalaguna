@@ -37,6 +37,7 @@ import type { Periodo } from "../../types/periodo";
 import type { Docente } from "../../types/docente";
 import PeriodoService from "../../services/periodoService";
 import DocentesService from "../../services/docentsService";
+import DeleteActividadDialog from "../../components/dialogs/DeleteActividadDialog";
 
 export const Actividades = () => {
     const [actividades, setActividades] = useState<Actividad[]>([]);
@@ -47,6 +48,8 @@ export const Actividades = () => {
     const [isCreatingNew, setIsCreatingNew] = useState(false);
     const [periodos, setPeriodos] = useState<Periodo[]>([]);
     const [docentes, setDocentes] = useState<Docente[]>([]);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [deletingActividad, setDeletingActividad] = useState<Actividad | null>(null);
     const [formData, setFormData] = useState<CreateActividadDto>({
         act_nombre: '',
         act_creditos: 0,
@@ -292,16 +295,22 @@ export const Actividades = () => {
         }
     };
 
-    const handleDeleteActividad = async () => {
+    const handleOpenDeleteDialog = () => {
         if (!selectedActividad) return;
+        setDeletingActividad(selectedActividad);
+        setOpenDeleteDialog(true);
+    };
 
-        if (!window.confirm(`¿Está seguro que desea eliminar la actividad "${selectedActividad.act_nombre}"?`)) {
-            return;
-        }
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+        setDeletingActividad(null);
+    };
+
+    const handleDeleteActividad = async () => {
+        if (!deletingActividad) return;
 
         try {
-            setLoading(true);
-            await ActividadesService.delete(selectedActividad.act_id.toString());
+            await ActividadesService.delete(deletingActividad.act_id.toString());
             setSeverity('success');
             setSnackbarMessage('Actividad eliminada exitosamente');
             setOpenSnackbar(true);
@@ -315,13 +324,12 @@ export const Actividades = () => {
                 doc_responsable: 0
             });
             await fetchActividades();
-        } catch (error) {
-            console.error('Error al eliminar actividad:', error);
+        } catch (error: any) {
+            const message = error.response?.data?.message || 'Error al eliminar la actividad';
             setSeverity('error');
-            setSnackbarMessage('Error al eliminar la actividad');
+            setSnackbarMessage(message);
             setOpenSnackbar(true);
-        } finally {
-            setLoading(false);
+            throw error;
         }
     };
 
@@ -829,7 +837,7 @@ export const Actividades = () => {
                                                     color="error"
                                                     startIcon={<Delete />}
                                                     disabled={loading}
-                                                    onClick={handleDeleteActividad}
+                                                    onClick={handleOpenDeleteDialog}
                                                     sx={{ minWidth: 140 }}
                                                 >
                                                     Eliminar
@@ -873,6 +881,13 @@ export const Actividades = () => {
                     </Stack>
                 </Stack>
             </Container>
+
+            <DeleteActividadDialog
+                open={openDeleteDialog}
+                actividad={deletingActividad}
+                onClose={handleCloseDeleteDialog}
+                onConfirm={handleDeleteActividad}
+            />
         </>
     )
 }

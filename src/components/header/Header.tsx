@@ -59,13 +59,10 @@ export const Header = () => {
                             <Typography variant="subtitle1" sx={{ fontWeight: 500, lineHeight: 1.2 }}>
                                 Sistema de Gestión Académica
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                                Control de actividades y créditos
-                            </Typography>
                         </Box>
                     </Box>
 
-                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 1 }}>
+                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 1, pr: 4 }}>
                         {getNavigationRoutes()
                             .filter(route => {
                                 if (!route.allowedRoles) return true;

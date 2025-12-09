@@ -3,13 +3,12 @@ import type { AlumnoCreditosReport } from "../../../types/alumno";
 
 interface ReportCardProps {
     report: AlumnoCreditosReport;
+    creditosRequeridos?: number;
 }
 
-const CREDITOS_REQUERIDOS = 6;
-
-export const ReportCard = ({ report }: ReportCardProps) => {
-    const porcentaje = Math.min((report.totalCreditos / CREDITOS_REQUERIDOS) * 100, 100);
-    const creditosCompletos = report.totalCreditos >= CREDITOS_REQUERIDOS;
+export const ReportCard = ({ report, creditosRequeridos = 6 }: ReportCardProps) => {
+    const porcentaje = Math.min((report.totalCreditos / creditosRequeridos) * 100, 100);
+    const creditosCompletos = report.totalCreditos >= creditosRequeridos;
 
     return (
         <Card
@@ -75,7 +74,7 @@ export const ReportCard = ({ report }: ReportCardProps) => {
                                 {report.totalCreditos}
                             </Typography>
                             <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.6rem' }}>
-                                de {CREDITOS_REQUERIDOS}
+                                de {creditosRequeridos}
                             </Typography>
                         </Box>
                     </Box>

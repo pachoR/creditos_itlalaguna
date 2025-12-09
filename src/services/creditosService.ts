@@ -20,7 +20,6 @@ export class CreditosService {
     }
 
     static async create(credito: CreateCreditoDto): Promise<Credito> {
-        console.log('Creating credito with data:', credito);
         const response = await api.post<Credito>(`${this.BASE_URL}/create`, credito);
         return response.data;
     }

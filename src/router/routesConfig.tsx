@@ -5,6 +5,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 import { 
     Login, 
@@ -16,6 +17,7 @@ import {
     Docentes,
     Usuarios,
     Periodos,
+    Configuraciones,
     NotFound
 } from '../pages';
 
@@ -96,6 +98,14 @@ export const routesConfig: RouteConfig[] = [
         title: 'Periodos',
         component: Periodos,
         icon: HomeIcon,
+        showInNav: true,
+        allowedRoles: ['ADMINISTRADOR'],
+    },
+    {
+        path: '/configuraciones',
+        title: 'Configuracion',
+        component: Configuraciones,
+        icon: SettingsIcon,
         showInNav: true,
         allowedRoles: ['ADMINISTRADOR'],
     },

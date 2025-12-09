@@ -10,6 +10,7 @@ interface CardsViewProps {
     onCardClick: (report: AlumnoCreditosReport) => void;
     onPageChange: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
     onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    creditosRequeridos: number;
 }
 
 export const CardsView = ({
@@ -20,6 +21,7 @@ export const CardsView = ({
     onCardClick,
     onPageChange,
     onRowsPerPageChange,
+    creditosRequeridos,
 }: CardsViewProps) => {
     return (
         <>
@@ -46,7 +48,7 @@ export const CardsView = ({
                                 onClick={() => onCardClick(report)}
                                 sx={{ cursor: 'pointer' }}
                             >
-                                <ReportCard report={report} />
+                                <ReportCard report={report} creditosRequeridos={creditosRequeridos} />
                             </Box>
                         ))}
                     </Box>
